@@ -42,3 +42,5 @@ next-env.d.ts
 
 database.sqlite
 Lock-in-api
+database.sqlite-shm
+datbase.sqlite-wal
