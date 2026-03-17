@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { getAuth } from '@/lib/auth';
 
 // Hardcoded for now, will be replaced by auth later
-const USER_ID = 1;
+const USER_ID = await getAuth();
 
 export async function GET() {
   const projects = db.prepare(

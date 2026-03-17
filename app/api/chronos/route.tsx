@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { getAuth } from '@/lib/auth';
 
-const USER_ID = 1;
+const USER_ID = await getAuth();
 
 type Chrono = {
   id: number;
