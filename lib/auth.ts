@@ -3,8 +3,8 @@ import { cookies } from 'next/headers';
 
 const SECRET = process.env.JWT_SECRET!;
 
-export function signToken(payload : {userid: number, email : string}){
-    jwt.sign(payload, SECRET, {expiresIn: '7d'});
+export function signToken(payload : {userId: number, email : string}){
+    return jwt.sign(payload, SECRET, {expiresIn: '7d'});
 }
 
 export async function getAuth() : Promise<number> {
