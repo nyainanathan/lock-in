@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getAuth } from '@/lib/auth';
 
-const USER_ID = await getAuth();
-
 type Chrono = {
   id: number;
   user_id: number;
@@ -15,6 +13,7 @@ type Chrono = {
 };
 
 export async function GET() {
+  const USER_ID = await getAuth();
   const chronos = db.prepare(
     'SELECT * FROM chronos WHERE user_id = ? ORDER BY created_at DESC'
   ).all(USER_ID) as Chrono[];
@@ -23,6 +22,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const USER_ID = await getAuth();
   const { project_id } = await req.json();
 
   // Only one chrono can be running at a time

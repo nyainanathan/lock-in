@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getAuth } from '@/lib/auth';
 
-const USER_ID = await getAuth();
 
 type Project = {
   id: number;
@@ -16,6 +15,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  
+  const USER_ID = await getAuth();
+
   const { id } = await params;
 
   const project = db.prepare(
@@ -37,6 +39,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+
+  const USER_ID = await getAuth();
+
   const { id } = await params;
   const { name } = await req.json();
 
@@ -72,6 +77,9 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+
+  const USER_ID = await getAuth();
+
   const { id } = await params;
 
   const project = db.prepare(

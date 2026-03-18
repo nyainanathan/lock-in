@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getAuth } from '@/lib/auth';
 
-// Hardcoded for now, will be replaced by auth later
-const USER_ID = await getAuth();
-
 export async function GET() {
+
+  const USER_ID = await getAuth();
+
   const projects = db.prepare(
     'SELECT * FROM projects WHERE user_id = ? ORDER BY created_at DESC'
   ).all(USER_ID);
@@ -14,6 +14,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+
+  const USER_ID = await getAuth();
+
+
   const { name } = await req.json();
 
   if (!name) {

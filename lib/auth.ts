@@ -9,7 +9,6 @@ export function signToken(payload : {userId: number, email : string}){
 
 export async function getAuth() : Promise<number> {
     const token = (await cookies()).get('token')?.value;
-
     if(!token){
         throw new Error("Unauthorized!");
     }

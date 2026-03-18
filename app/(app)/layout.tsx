@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
       <body>
         <nav className="flex gap-6 px-8 py-4 bg-white shadow-sm">
           <Link href="/" className="font-semibold text-gray-700 hover:text-gray-900">
@@ -24,6 +23,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </nav>
         {children}
       </body>
-    </html>
   );
 }
