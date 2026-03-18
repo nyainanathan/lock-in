@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import db from '@/lib/db';
-import { ok } from 'assert';
 import { signToken } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {

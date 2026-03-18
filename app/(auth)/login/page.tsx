@@ -1,6 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { redirect, useRouter } from 'next/navigation'
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login')
@@ -9,12 +9,24 @@ export default function AuthPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const router = useRouter()
+  const [mounted, setMounted] = useState(true)
+  const router = useRouter();
+
+  const checkAuth = async () => {
+      const req = await fetch(`/api/auth/me`);
+      const userIdData = await req.json();
+
+      console.log(req);
+      console.log(userIdData);
+
+      if(userIdData.userId) {
+        redirect('/');
+      } 
+  }
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    checkAuth();
+  }, []);
 
   const switchMode = (next : any) => {
     setError('')
