@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ChronoTimer from '@/components/chronoTimer';
+import { redirect } from 'next/navigation';
 
 type Chrono = {
   id: number;
@@ -58,8 +59,16 @@ export default function Dashboard() {
     );
   }
 
+    const handleLougout = () => {
+    fetch('/api/auth/logout', {
+      method: 'POST'
+    })
+
+    redirect('/login');
+  }
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-8 bg-gray-50 p-8">
+    <main className="min-h-screen flex flex-col items-center justify-evenly gap-8 bg-gray-50 p-8">
       <h1 className="text-4xl font-bold text-gray-800">🔒 Lock-in</h1>
 
       {activeChrono ? (
@@ -100,6 +109,12 @@ export default function Dashboard() {
           </button>
         </div>
       )}
+          <button
+          onClick={handleLougout}
+          className='bg-red-300 p-4 rounded-2xl cursor-pointer'
+          >
+            Logout
+          </button>
     </main>
   );
 }

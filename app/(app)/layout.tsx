@@ -17,6 +17,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     redirect('/login')
   }
 
+
+
   return (
       <div>
         <nav className="flex gap-6 px-8 py-4 bg-white shadow-sm">
@@ -29,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Link href="/chronos" className="font-semibold text-gray-700 hover:text-gray-900">
             ⏱ History
           </Link>
+
         </nav>
         {children}
       </div>
