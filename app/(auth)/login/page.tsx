@@ -13,15 +13,20 @@ export default function AuthPage() {
   const router = useRouter();
 
   const checkAuth = async () => {
-      const req = await fetch(`/api/auth/me`);
-      const userIdData = await req.json();
-
-      console.log(req);
-      console.log(userIdData);
-
-      if(userIdData.userId) {
-        redirect('/');
-      } 
+      try {
+        const req = await fetch(`/api/auth/me`, {
+          credentials: 'include',
+        });
+        if (!req.ok) return;
+        const userIdData = await req.json();
+        console.log(userIdData);
+        
+        if (userIdData.userId) {
+          redirect('/');
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
   }
 
   useEffect(() => {
@@ -66,7 +71,7 @@ export default function AuthPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+        
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -75,22 +80,18 @@ export default function AuthPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: #f5f0e8;
-          background-image:
-            radial-gradient(ellipse 80% 60% at 10% 0%, #e8d5c0 0%, transparent 60%),
-            radial-gradient(ellipse 60% 80% at 90% 100%, #d4c5b0 0%, transparent 55%);
-          font-family: 'DM Sans', sans-serif;
+          background-color: #f3f4f6;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'DM Sans', sans-serif;
           padding: 24px;
         }
 
         .auth-card {
           width: 100%;
           max-width: 420px;
-          background: rgba(255,252,247,0.85);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(200,185,165,0.4);
-          border-radius: 20px;
+          background: white;
+          border-radius: 16px;
           padding: 48px 44px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
           opacity: 0;
           transform: translateY(16px);
           transition: opacity 0.5s ease, transform 0.5s ease;
@@ -107,49 +108,45 @@ export default function AuthPage() {
         }
 
         .brand-name {
-          font-family: 'Playfair Display', serif;
           font-size: 32px;
-          font-weight: 400;
-          color: #2c2218;
+          font-weight: 700;
+          color: #1f2937;
           letter-spacing: -0.5px;
           line-height: 1;
         }
 
         .brand-tagline {
           font-size: 13px;
-          font-weight: 300;
-          color: #8a7b6a;
+          font-weight: 400;
+          color: #6b7280;
           margin-top: 6px;
           letter-spacing: 0.3px;
         }
 
         .toggle-row {
           display: flex;
-          background: rgba(200,185,165,0.2);
-          border-radius: 10px;
-          padding: 3px;
+          gap: 8px;
           margin-bottom: 32px;
+          border-bottom: 1px solid #e5e7eb;
         }
 
         .toggle-btn {
           flex: 1;
-          padding: 9px 0;
+          padding: 12px 0;
           border: none;
           background: transparent;
-          border-radius: 8px;
-          font-family: 'DM Sans', sans-serif;
+          border-bottom: 2px solid transparent;
+          font-family: inherit;
           font-size: 14px;
-          font-weight: 400;
-          color: #8a7b6a;
+          font-weight: 500;
+          color: #9ca3af;
           cursor: pointer;
           transition: all 0.22s ease;
         }
 
         .toggle-btn.active {
-          background: #fff8f0;
-          color: #2c2218;
-          font-weight: 500;
-          box-shadow: 0 1px 4px rgba(90,65,40,0.1);
+          color: #1f2937;
+          border-bottom-color: #1f2937;
         }
 
         .form-group {
@@ -172,7 +169,7 @@ export default function AuthPage() {
           display: block;
           font-size: 12px;
           font-weight: 500;
-          color: #6b5c4a;
+          color: #4b5563;
           letter-spacing: 0.6px;
           text-transform: uppercase;
           margin-bottom: 7px;
@@ -180,33 +177,33 @@ export default function AuthPage() {
 
         .form-input {
           width: 100%;
-          padding: 12px 16px;
-          border: 1px solid rgba(180,160,135,0.4);
-          border-radius: 10px;
-          background: rgba(255,252,247,0.7);
-          font-family: 'DM Sans', sans-serif;
+          padding: 12px 14px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: #f9fafb;
+          font-family: inherit;
           font-size: 15px;
-          font-weight: 300;
-          color: #2c2218;
+          font-weight: 400;
+          color: #1f2937;
           outline: none;
           transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
         .form-input::placeholder {
-          color: #b5a898;
+          color: #d1d5db;
         }
 
         .form-input:focus {
-          border-color: rgba(160,120,80,0.5);
-          box-shadow: 0 0 0 3px rgba(180,140,90,0.1);
-          background: #fffdf9;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          background: white;
         }
 
         .error-msg {
           font-size: 13px;
-          color: #b05a3a;
-          background: rgba(180,80,40,0.07);
-          border: 1px solid rgba(180,80,40,0.15);
+          color: #dc2626;
+          background: #fee2e2;
+          border: 1px solid #fecaca;
           border-radius: 8px;
           padding: 10px 14px;
           margin-bottom: 18px;
@@ -216,13 +213,13 @@ export default function AuthPage() {
         .submit-btn {
           width: 100%;
           padding: 13px;
-          background: #2c2218;
-          color: #f5f0e8;
+          background: #1f2937;
+          color: white;
           border: none;
-          border-radius: 10px;
-          font-family: 'DM Sans', sans-serif;
+          border-radius: 8px;
+          font-family: inherit;
           font-size: 15px;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
           margin-top: 6px;
           letter-spacing: 0.2px;
@@ -232,7 +229,7 @@ export default function AuthPage() {
         }
 
         .submit-btn:hover:not(:disabled) {
-          background: #3d3025;
+          background: #111827;
           transform: translateY(-1px);
         }
 
@@ -249,8 +246,8 @@ export default function AuthPage() {
           display: inline-block;
           width: 14px;
           height: 14px;
-          border: 2px solid rgba(245,240,232,0.3);
-          border-top-color: #f5f0e8;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: white;
           border-radius: 50%;
           animation: spin 0.7s linear infinite;
           vertical-align: middle;
@@ -264,16 +261,9 @@ export default function AuthPage() {
         .footer-text {
           text-align: center;
           font-size: 13px;
-          color: #8a7b6a;
+          color: #6b7280;
           margin-top: 24px;
-          font-weight: 300;
-        }
-
-        .footer-text em {
-          font-family: 'Playfair Display', serif;
-          font-style: italic;
-          color: #5a4535;
-          font-size: 14px;
+          font-weight: 400;
         }
 
         .divider {
@@ -286,13 +276,13 @@ export default function AuthPage() {
         .divider-line {
           flex: 1;
           height: 1px;
-          background: rgba(180,160,135,0.25);
+          background: #e5e7eb;
         }
 
         .divider-text {
           font-size: 11px;
           font-weight: 400;
-          color: #b5a898;
+          color: #9ca3af;
           letter-spacing: 0.5px;
           text-transform: uppercase;
         }
@@ -302,7 +292,7 @@ export default function AuthPage() {
         <div className={`auth-card ${mounted ? 'visible' : ''}`}>
 
           <div className="brand">
-            <div className="brand-name">Lock-in</div>
+            <div className="brand-name">🔒 Lock-in</div>
             <div className="brand-tagline">your time, accounted for</div>
           </div>
 
@@ -390,9 +380,9 @@ export default function AuthPage() {
                 <button
                   onClick={() => switchMode('register')}
                   type="button"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#1f2937', fontWeight: '600' }}
                 >
-                  <em>Start focusing →</em>
+                  Start focusing →
                 </button>
               </>
             ) : (
@@ -401,9 +391,9 @@ export default function AuthPage() {
                 <button
                   onClick={() => switchMode('login')}
                   type="button"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#1f2937', fontWeight: '600' }}
                 >
-                  <em>Sign back in →</em>
+                  Sign back in →
                 </button>
               </>
             )}
