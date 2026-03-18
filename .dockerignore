@@ -1,0 +1,34 @@
+# Dependencies — reinstalled fresh in the image
+node_modules
+
+# Next.js build output — rebuilt inside Docker
+.next
+
+# Local SQLite database — lives in the Docker volume
+*.sqlite
+*.db
+
+# Dev / environment files
+.env
+.env.local
+.env.development
+.env.test
+
+# Git
+.git
+.gitignore
+
+# Editor / OS noise
+.DS_Store
+*.swp
+.vscode
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker files themselves (no need to copy into the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
