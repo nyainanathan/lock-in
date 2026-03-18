@@ -104,9 +104,15 @@ export async function PATCH(
   }
 
   else if (action === 'stop') {
+
+    const createdAt = new Date(chrono.created_at.replace(' ', 'T') + 'Z');
+
     const elapsed = chrono.status === 'running'
-      ? Math.floor((Date.now() - new Date(chrono.created_at).getTime()) / 1000)
+      ? Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000)
       : 0;
+
+      console.log("Elapsed: " + elapsed);
+      console.log("Total focus time: " + chrono.total_focus_time);
 
     db.prepare(
       `UPDATE chronos
