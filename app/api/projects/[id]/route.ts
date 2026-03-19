@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from '@/lib/auth';
 import { getDb } from '@/lib/db';
@@ -71,7 +73,7 @@ export async function DELETE(
 ) {
 
   const pool = getDb()!;
-  
+
   const USER_ID = await getAuth();
   const { id } = await params;
 

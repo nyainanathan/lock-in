@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server';
 import  { getDb } from '@/lib/db';
 import { getAuth } from '@/lib/auth';
@@ -19,7 +21,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
 
   const pool = getDb()!;
-  
+
   const USER_ID = await getAuth();
 
   const { name } = await req.json();
