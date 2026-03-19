@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
 import { getAuth } from '@/lib/auth';
+import { getDb } from '@/lib/db';
 
 type Project = {
   id: number;
@@ -14,6 +14,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+
+  const pool = getDb()!;
+
   const USER_ID = await getAuth();
   const { id } = await params;
 
@@ -34,6 +37,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const pool = getDb()!;
+
   const USER_ID = await getAuth();
   const { id } = await params;
   const { name } = await req.json();
@@ -64,6 +69,9 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+
+  const pool = getDb()!;
+  
   const USER_ID = await getAuth();
   const { id } = await params;
 

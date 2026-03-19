@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
 import { getAuth } from '@/lib/auth';
-import pool from '@/lib/db';
+import { getDb } from '@/lib/db';
 
 type Chrono = {
   id: number;
@@ -18,6 +17,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+
+  const pool = getDb()!;
 
   const USER_ID = await getAuth();
 
@@ -45,6 +46,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+
+  const pool = getDb()!;
 
   const USER_ID = await getAuth();
 
@@ -151,6 +154,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
 
+  const pool = getDb()!;
+  
   const USER_ID = await getAuth();
 
   const { id } = await params;

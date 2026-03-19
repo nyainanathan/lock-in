@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import  { getDb } from '@/lib/db';
 import { getAuth } from '@/lib/auth';
 
 export async function GET() {
+
+  const pool = getDb()!;
+
   const USER_ID = await getAuth();
 
   const result = await pool.query(
@@ -14,6 +17,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+
+  const pool = getDb()!;
+  
   const USER_ID = await getAuth();
 
   const { name } = await req.json();

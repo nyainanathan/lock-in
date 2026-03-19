@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import{ getDb } from '@/lib/db';
 import { getAuth } from '@/lib/auth';
 
 type Chrono = {
@@ -13,6 +13,9 @@ type Chrono = {
 };
 
 export async function GET() {
+
+  const pool = getDb()!;
+
   const USER_ID = await getAuth();
 
   const result = await pool.query(
@@ -24,6 +27,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+
+  const pool = getDb()!;
+
   const USER_ID = await getAuth();
   const { project_id } = await req.json();
 
