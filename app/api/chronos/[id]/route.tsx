@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getAuth } from '@/lib/auth';
-
+import pool from '@/lib/db';
 
 type Chrono = {
   id: number;
@@ -23,11 +23,14 @@ export async function GET(
 
   const { id } = await params;
 
-  const chrono = db.prepare(
-    'SELECT * FROM chronos WHERE id = ? AND user_id = ?'
-  ).get(id, USER_ID) as Chrono | undefined;
+  const chrono = await pool.query(
+    'SELECT * FROM chronos WHERE id = $2 AND user_id = $2',
+    [id, USER_ID]
+  );
 
-  if (!chrono) {
+  const chronoResult = chrono.rows[0]  as Chrono | undefined;
+
+  if (!chronoResult) {
     return NextResponse.json(
       { error: 'Chrono not found' },
       { status: 404 }
@@ -49,18 +52,21 @@ export async function PATCH(
   const { id } = await params;
   const { action } = await req.json(); // action: 'pause' | 'resume' | 'stop'
 
-  const chrono = db.prepare(
-    'SELECT * FROM chronos WHERE id = ? AND user_id = ?'
-  ).get(id, USER_ID) as Chrono | undefined;
+  const chrono = await pool.query(
+    'SELECT * FROM chronos WHERE id = $1 AND user_id = $2',
+    [id, USER_ID]
+  );
 
-  if (!chrono) {
+  const chronoResult = chrono.rows[0]  as Chrono | undefined;
+
+  if (!chronoResult) {
     return NextResponse.json(
       { error: 'Chrono not found' },
       { status: 404 }
     );
   }
 
-  if (chrono.status === 'stopped') {
+  if (chronoResult.status === 'stopped') {
     return NextResponse.json(
       { error: 'Chrono is already stopped' },
       { status: 409 }
@@ -68,7 +74,7 @@ export async function PATCH(
   }
 
   if (action === 'pause') {
-    if (chrono.status === 'paused') {
+    if (chronoResult.status === 'paused') {
       return NextResponse.json(
         { error: 'Chrono is already paused' },
         { status: 409 }
@@ -78,49 +84,52 @@ export async function PATCH(
     
     // Calculate time elapsed since chrono started/resumed
     //Inform JS that it is an UTC timestamp
-    const createdAt = new Date(chrono.created_at.replace(' ', 'T') + 'Z');
+    const createdAt = new Date(chronoResult.created_at.replace(' ', 'T') + 'Z');
 
     const elapsed = Math.floor(
     (Date.now() - createdAt.getTime()) / 1000
     );
     
-
-    db.prepare(
-      'UPDATE chronos SET status = ?, total_focus_time = ? WHERE id = ?'
-    ).run('paused', chrono.total_focus_time + elapsed, id);
+    await pool.query(
+      'UPDATE chronos SET status = $1, total_focus_time = $2 WHERE id = $3',
+      ['paused' , chronoResult.total_focus_time + elapsed, id]
+    )
   }
 
   else if (action === 'resume') {
-    if (chrono.status === 'running') {
+    if (chronoResult.status === 'running') {
       return NextResponse.json(
         { error: 'Chrono is already running' },
         { status: 409 }
       );
     }
 
-    db.prepare(
-      'UPDATE chronos SET status = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).run('running', id);
+    await pool.query(
+      'UPDATE chronos SET status = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?',
+      ['running' , id]
+    )
+
   }
 
   else if (action === 'stop') {
 
-    const createdAt = new Date(chrono.created_at.replace(' ', 'T') + 'Z');
+    console.log(chronoResult)
 
-    const elapsed = chrono.status === 'running'
-      ? Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000)
+    const elapsed = chronoResult.status === 'running'
+      ? Math.floor((Date.now() - new Date(chronoResult.created_at).getTime()) / 1000)
       : 0;
 
       console.log("Elapsed: " + elapsed);
-      console.log("Total focus time: " + chrono.total_focus_time);
+      console.log("Total focus time: " + chronoResult.total_focus_time);
 
-    db.prepare(
-      `UPDATE chronos
-       SET status = 'stopped',
-           total_focus_time = ?,
-           stopped_at = CURRENT_TIMESTAMP
-       WHERE id = ?`
-    ).run(chrono.total_focus_time + elapsed, id);
+      await pool.query(
+        `UPDATE chronos
+          SET status = 'stopped',
+              total_focus_time = $1,
+              stopped_at = CURRENT_TIMESTAMP
+          WHERE id = $2`,
+          [chronoResult.total_focus_time + elapsed , id]
+      )
   }
 
   else {
@@ -130,11 +139,14 @@ export async function PATCH(
     );
   }
 
-  const updated = db.prepare(
-    'SELECT * FROM chronos WHERE id = ?'
-  ).get(id) as Chrono;
+  const updated = await pool.query(
+    'SELECT * FROM chronos WHERE id = $1',
+    [id]
+  );
 
-  return NextResponse.json(updated);
+  const updatedResult = updated.rows[0] as Chrono;
+
+  return NextResponse.json(updatedResult);
 }
 
 export async function DELETE(
@@ -146,11 +158,15 @@ export async function DELETE(
 
   const { id } = await params;
 
-  const chrono = db.prepare(
-    'SELECT * FROM chronos WHERE id = ? AND user_id = ?'
-  ).get(id, USER_ID) as Chrono | undefined;
+  const chrono = await pool.query(
+    'SELECT * FROM chronos WHERE id = $1 AND user_id = $2',
+    [id, USER_ID]
+  );
 
-  if (!chrono) {
+  const chronoResult = chrono.rows[0] as Chrono | undefined;
+
+
+  if (!chronoResult) {
     return NextResponse.json(
       { error: 'Chrono not found' },
       { status: 404 }
@@ -158,14 +174,14 @@ export async function DELETE(
   }
 
   // Prevent deleting an active chrono
-  if (chrono.status === 'running' || chrono.status === 'paused') {
+  if (chronoResult.status === 'running' || chronoResult.status === 'paused') {
     return NextResponse.json(
       { error: 'Cannot delete an active chrono. Stop it first.' },
       { status: 409 }
     );
   }
 
-  db.prepare('DELETE FROM chronos WHERE id = ?').run(id);
+  await pool.query('DELETE FROM chronos WHERE id = $1', [id])
 
   return NextResponse.json({ success: true });
 }

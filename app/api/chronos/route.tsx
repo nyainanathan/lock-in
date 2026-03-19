@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import pool from '@/lib/db';
 import { getAuth } from '@/lib/auth';
 
 type Chrono = {
@@ -14,11 +14,13 @@ type Chrono = {
 
 export async function GET() {
   const USER_ID = await getAuth();
-  const chronos = db.prepare(
-    'SELECT * FROM chronos WHERE user_id = ? ORDER BY created_at DESC'
-  ).all(USER_ID) as Chrono[];
 
-  return NextResponse.json(chronos);
+  const result = await pool.query(
+    'SELECT * FROM chronos WHERE user_id = $1 ORDER BY created_at DESC',
+    [USER_ID]
+  );
+
+  return NextResponse.json(result.rows as Chrono[]);
 }
 
 export async function POST(req: NextRequest) {
@@ -26,24 +28,24 @@ export async function POST(req: NextRequest) {
   const { project_id } = await req.json();
 
   // Only one chrono can be running at a time
-  const active = db.prepare(
-    `SELECT * FROM chronos WHERE user_id = ? AND status IN ('running', 'paused')`
-  ).get(USER_ID);
+  const active = await pool.query(
+    `SELECT * FROM chronos WHERE user_id = $1 AND status IN ('running', 'paused')`,
+    [USER_ID]
+  );
 
-  if (active) {
+  if (active.rows.length > 0) {
     return NextResponse.json(
       { error: 'A chrono is already active. Stop it before starting a new one.' },
       { status: 409 }
     );
   }
 
-  const result = db.prepare(
-    'INSERT INTO chronos (user_id, project_id, status) VALUES (?, ?, ?)'
-  ).run(USER_ID, project_id ?? null, 'running');
+  const inserted = await pool.query(
+    `INSERT INTO chronos (user_id, project_id, status, stopped_at)
+     VALUES ($1, $2, $3, now())
+     RETURNING *`,
+    [USER_ID, project_id ?? null, 'running']
+  );
 
-  const chrono = db.prepare(
-    'SELECT * FROM chronos WHERE id = ?'
-  ).get(result.lastInsertRowid) as Chrono;
-
-  return NextResponse.json(chrono, { status: 201 });
+  return NextResponse.json(inserted.rows[0] as Chrono, { status: 201 });
 }

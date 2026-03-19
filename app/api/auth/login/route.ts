@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import db from '@/lib/db';
 import { signToken } from '@/lib/auth';
+import pool from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
@@ -14,8 +14,9 @@ export async function POST(req: NextRequest) {
   }
 
   // Find user
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
-  if (!user) {
+  const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]) as any;
+  const userResult = user.rows[0];
+  if (!userResult) {
     return NextResponse.json(
       { error: 'Invalid credentials' },
       { status: 401 }
