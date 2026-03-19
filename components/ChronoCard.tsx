@@ -28,7 +28,7 @@ function formatTime(seconds: number) {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr + 'Z').toLocaleString();
+  return new Date(dateStr).toLocaleString();
 }
 
 export default function ChronoCard({ chrono, projects, onDelete }: Props) {

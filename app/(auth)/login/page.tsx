@@ -19,7 +19,6 @@ export default function AuthPage() {
         });
         if (!req.ok) return;
         const userIdData = await req.json();
-        console.log(userIdData);
         
         if (userIdData.userId) {
           redirect('/');

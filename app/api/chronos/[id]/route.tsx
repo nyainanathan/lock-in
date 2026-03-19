@@ -113,14 +113,11 @@ export async function PATCH(
 
   else if (action === 'stop') {
 
-    console.log(chronoResult)
 
     const elapsed = chronoResult.status === 'running'
       ? Math.floor((Date.now() - new Date(chronoResult.created_at).getTime()) / 1000)
       : 0;
 
-      console.log("Elapsed: " + elapsed);
-      console.log("Total focus time: " + chronoResult.total_focus_time);
 
       await pool.query(
         `UPDATE chronos

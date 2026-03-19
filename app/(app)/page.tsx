@@ -49,7 +49,6 @@ export default function Dashboard() {
       body: JSON.stringify({ project_id: selectedProject }),
     });
 
-    console.log(await chr.json());
     fetchActiveChrono();
   }
 
