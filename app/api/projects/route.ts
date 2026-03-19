@@ -15,6 +15,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const USER_ID = await getAuth();
+
+  console.log("user id : " + USER_ID);
   const { name } = await req.json();
 
   if (!name) {
@@ -25,6 +27,8 @@ export async function POST(req: NextRequest) {
     'INSERT INTO projects (name, user_id) VALUES ($1, $2) RETURNING *',
     [name, USER_ID]
   );
+
+  console.log(result.rows)
 
   return NextResponse.json(result.rows[0], { status: 201 });
 }

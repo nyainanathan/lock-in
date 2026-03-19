@@ -84,7 +84,7 @@ export async function PATCH(
     
     // Calculate time elapsed since chrono started/resumed
     //Inform JS that it is an UTC timestamp
-    const createdAt = new Date(chronoResult.created_at.replace(' ', 'T') + 'Z');
+    const createdAt = new Date(chronoResult.created_at);
 
     const elapsed = Math.floor(
     (Date.now() - createdAt.getTime()) / 1000
@@ -105,7 +105,7 @@ export async function PATCH(
     }
 
     await pool.query(
-      'UPDATE chronos SET status = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?',
+      'UPDATE chronos SET status = $1, created_at = now() WHERE id = $2',
       ['running' , id]
     )
 

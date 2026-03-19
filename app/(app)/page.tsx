@@ -43,11 +43,13 @@ export default function Dashboard() {
   }, []);
 
   async function startChrono() {
-    await fetch('/api/chronos', {
+    const chr = await fetch('/api/chronos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ project_id: selectedProject }),
     });
+
+    console.log(await chr.json());
     fetchActiveChrono();
   }
 

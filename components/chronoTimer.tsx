@@ -23,7 +23,7 @@ function formatTime(seconds: number) {
 }
 
 export default function ChronoTimer({ chrono, onUpdate }: Props) {
-  const [elapsed, setElapsed] = useState(0);
+  const [elapsed, setElapsed] = useState(1);
 
   // Tick every second when running
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function ChronoTimer({ chrono, onUpdate }: Props) {
   }
 
   const sinceLastResume = Math.floor(
-    (Date.now() - new Date(chrono.created_at + 'Z').getTime()) / 1000
+    (Date.now() - new Date(chrono.created_at).getTime()) / 1000
   );
   setElapsed(chrono.total_focus_time + sinceLastResume);
 

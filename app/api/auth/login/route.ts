@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Verify password
-  const valid = await bcrypt.compare(password, user.password_hash);
+  const valid = await bcrypt.compare(password, userResult.password_hash);
   if (!valid) {
     return NextResponse.json(
       { error: 'Invalid credentials' },
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     );
   }
   
-  const token = signToken({ userId: user.id, email: user.email })
+  const token = signToken({ userId: userResult.id, email: userResult.email })
 
   return NextResponse.json({ ok: true }, {
     headers: {

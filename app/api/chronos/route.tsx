@@ -47,5 +47,5 @@ export async function POST(req: NextRequest) {
     [USER_ID, project_id ?? null, 'running']
   );
 
-  return NextResponse.json(inserted.rows[0] as Chrono, { status: 201 });
+  return NextResponse.json({chrono : inserted.rows[0] }, { status: 201 });
 }
