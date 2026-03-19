@@ -2,10 +2,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get("token");
 
   const isLoginPage = request.nextUrl.pathname === "/login";
+
+  if (
+    request.nextUrl.pathname.startsWith("/api") 
+  ) {
+    return NextResponse.next();
+  }
 
   // 🚫 Prevent logged-in users from accessing login
   if (token && isLoginPage) {
@@ -21,5 +27,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/projects", "/chronos"],
+  matcher: ["/", "/projects", "/chronos"],
 };
